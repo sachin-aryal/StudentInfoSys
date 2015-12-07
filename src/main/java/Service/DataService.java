@@ -10,4 +10,16 @@ public class DataService implements Data{
 	public void display() {
 
 	}
+
+	public void filter() {
+
+	}
+
+	public void search() {
+
+	}
+
+	public void sort() {
+
+	}
 }
