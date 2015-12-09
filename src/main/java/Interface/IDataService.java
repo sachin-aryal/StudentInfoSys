@@ -10,8 +10,9 @@ import java.util.Map;
  * Created by saaryal on 12/3/15.
  */
 public interface IDataService {
-	 Map<Student, Marks> display(Student student,Marks marks,String filePath[]);
-	 void filter();
-	 void search();
-	void sort();
+	Map<Student,Marks> getData(Student student, Marks marks, String filePath[], String all,String param);
+	 void display(Student student,Marks marks,Map<Student,Marks> allInfo);
+	 void filter(Student student, Marks marks, String[] filePath, String whichFilter, String percentage);
+	 void search(Student student, Marks marks, String[] filePath, String searchBy, String searchByVal);
+	void sort(Student student, Marks marks, String[] filePath, String sortBy);
 }
