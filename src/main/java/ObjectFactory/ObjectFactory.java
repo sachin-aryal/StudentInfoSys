@@ -1,6 +1,8 @@
 package ObjectFactory;
 
-import Interface.Data;
+import Interface.IDataService;
+import Model.Marks;
+import Model.Student;
 import Service.DataService;
 
 /**
@@ -8,7 +10,9 @@ import Service.DataService;
  */
 public class ObjectFactory {
 
-	public Data getDataObject(){
+	public IDataService getDataObject(){
 		return new DataService();
 	}
+	public Student getStudentObject(){return new Student();}
+	public Marks getMarksObject(){return new Marks();}
 }
