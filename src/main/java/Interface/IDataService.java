@@ -10,7 +10,6 @@ import java.util.Map;
  * Created by saaryal on 12/3/15.
  */
 public interface IDataService {
-	Map<Student,Marks> getData(Student student, Marks marks, String filePath[], String all,String param);
 	 void display(Student student,Marks marks,Map<Student,Marks> allInfo);
 	 void filter(Student student, Marks marks, String[] filePath, String whichFilter, String percentage);
 	 void search(Student student, Marks marks, String[] filePath, String searchBy, String searchByVal);

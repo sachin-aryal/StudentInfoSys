@@ -15,11 +15,8 @@ import java.util.*;
  */
 public class DataService implements IDataService {
 
-	public Map<Student, Marks> getData(Student student, Marks marks, String filePath[], String whichData,String parameter) {
-		List<Student> stdList = new ArrayList<Student>();
-		List<Marks> markList = new ArrayList<Marks>();
-
-		Map<Student,Marks> allIfo = new HashMap<Student, Marks>();
+	public static Map<Student, Marks> getData(Student student, Marks marks, String filePath[], String whichData,String parameter) {
+		Map<Student,Marks> allIfo = new LinkedHashMap<Student, Marks>();
 
 		ObjectFactory obj = new ObjectFactory();
 
@@ -37,8 +34,8 @@ public class DataService implements IDataService {
 				if (partOne == null || partTwo == null)
 					break;
 
-				student = obj.getStudentObject();
-				marks = obj.getMarksObject();
+				student = new Student();
+				marks = new Marks();
 
 				student.setRollNo(Integer.parseInt(partOne[0]));
 				student.setBatch(Integer.parseInt(partOne[1]));
@@ -128,39 +125,25 @@ public class DataService implements IDataService {
 	}
 
 	public void sort(Student student, Marks marks, String[] filePath, String sortBy) {
+
 		Map<Student,Marks> studentMarksMap = getData(student,marks,filePath,"all",null);
+
+		Map<Student,Marks> sortedMap;
 
 		List<Student> stdList = new ArrayList<Student>(studentMarksMap.keySet());
 		List<Marks> markList = new ArrayList<Marks>(studentMarksMap.values());
-		System.out.println("Name\t\t\tRollNo\tBatch\tAddress\tSemester\tPercentage\tStatus");
 
 		if(sortBy.equals("name")){
-			Map<Integer,String> previousIndex = new HashMap<Integer, String>();
-			String addressList[]=new String[stdList.size()];
+			Map<Integer,String> previousIndex = new LinkedHashMap<Integer, String>();
+			String nameList[]=new String[stdList.size()];
 			int i=0;
 			for(Student std:stdList){
-				addressList[i] = std.getName();
-				previousIndex.put(i,addressList[i]);
+				nameList[i] = std.getName();
+				previousIndex.put(i,nameList[i]);
 				i++;
 			}
-			String sortedAddress [] = sortMeth(addressList);
-
-				for (String eName : sortedAddress) {
-					for(int k=0;k<stdList.size();k++) {
-						if (eName.equals(previousIndex.get(k))) {
-							student = stdList.get(k);
-							marks = markList.get(k);
-							break;
-						}
-					}
-				String status ="Pass";
-				if(!marks.isStatus()){
-					status="Fail";
-				}
-
-				System.out.println(student.getName()+"\t"+student.getRollNo()+"\t\t"+student.getBatch()+"\t"+student.getAddress()+"\t"
-						+marks.getSemester()+"\t"+marks.getPercentage()+"\t"+status);
-			}
+			sortedMap = getSortedMap(nameList,previousIndex,stdList,markList,student,marks);
+			display(student,marks,sortedMap);
 
 		}else if(sortBy.equals("rollNo")){
 			Map<Integer,Integer> previousIndex = new HashMap<Integer, Integer>();
@@ -171,24 +154,8 @@ public class DataService implements IDataService {
 				previousIndex.put(i,rollList[i]);
 				i++;
 			}
-			Integer sortedRoll [] = sortMeth(rollList);
-			for (int eRoll : sortedRoll) {
-				for(int k=0;k<stdList.size();k++) {
-					if (eRoll == previousIndex.get(k)) {
-						student = stdList.get(k);
-						marks = markList.get(k);
-						//previousIndex.remove(k);
-						break;
-					}
-				}
-				String status ="Pass";
-				if(!marks.isStatus()){
-					status="Fail";
-				}
-
-				System.out.println(student.getName()+"\t"+student.getRollNo()+"\t\t"+student.getBatch()+"\t"+student.getAddress()+"\t"
-						+marks.getSemester()+"\t"+marks.getPercentage()+"\t"+status);
-			}
+			sortedMap = getSortedMap(rollList,previousIndex,stdList,markList,student,marks);
+			display(student,marks,sortedMap);
 
 		}else if(sortBy.equals("address")){
 			Map<Integer,String> previousIndex = new HashMap<Integer, String>();
@@ -199,35 +166,23 @@ public class DataService implements IDataService {
 				previousIndex.put(i,addressList[i]);
 				i++;
 			}
-			String sortedAddress [] = sortMeth(addressList);
-
-			for (String eAddress : sortedAddress) {
-//				System.out.println("EaAddress "+eAddress);
-				for(int k=0;k<stdList.size();k++) {
-					if (eAddress.equals(previousIndex.get(k))) {
-//						System.out.println("Previous "+previousIndex.get(k));
-						student = stdList.get(k);
-						marks = markList.get(k);
-						previousIndex.remove(k);
-						stdList.remove(k);
-						markList.remove(k);
-						break;
-					}
-				}
-				String status ="Pass";
-				if(!marks.isStatus()){
-					status="Fail";
-				}
-
-				System.out.println(student.getName()+"\t"+student.getRollNo()+"\t\t"+student.getBatch()+"\t"+student.getAddress()+"\t"
-						+marks.getSemester()+"\t"+marks.getPercentage()+"\t"+status);
-			}
-
-		}/*else if(sortBy.equals("batch")){
+			sortedMap = getSortedMap(addressList,previousIndex,stdList,markList,student,marks);
+			display(student, marks, sortedMap);
 
 		}else if(sortBy.equals("percentage")){
+			Map<Integer,Double> previousIndex = new HashMap<Integer, Double>();
+			Double percentageList[]=new Double[stdList.size()];
+			int i=0;
+			for(Marks mId:markList){
+				percentageList[i] = mId.getPercentage();
+				previousIndex.put(i,percentageList[i]);
+				i++;
+			}
 
-		}*/
+
+			sortedMap = getSortedMap(percentageList,previousIndex,stdList,markList,student,marks);
+			display(student,marks,sortedMap);
+		}
 
 	}
 
@@ -245,4 +200,30 @@ public class DataService implements IDataService {
 		}
 		return x;
 	}
+
+	public static <E extends Comparable<E>> Map<Student,Marks> getSortedMap (E listvalues[],Map<Integer,E> previousIndex,
+																			 List<Student> stdList,List<Marks> markList,
+																			 Student student,Marks marks) {
+		Map<Student, Marks> sortedMap = new LinkedHashMap<Student, Marks>();
+		List<String> alreadyAdded = new LinkedList<String>();
+		E sortedValues[] = sortMeth(listvalues);
+		for (E eVal : sortedValues) {
+			for (int k = 0; k < stdList.size(); k++) {
+				if (eVal.equals(previousIndex.get(k))) {
+					if(!alreadyAdded.contains(String.valueOf(stdList.get(k).getRollNo())+eVal)){
+						student = stdList.get(k);
+						marks = markList.get(k);
+						sortedMap.put(student, marks);
+						alreadyAdded.add(String.valueOf(student.getRollNo())+eVal);
+						break;
+					}
+
+				}
+			}
+			sortedMap.put(student, marks);
+		}
+		System.out.println(sortedMap.size());
+		return sortedMap;
+	}
 }
+

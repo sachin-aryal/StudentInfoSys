@@ -2,6 +2,7 @@ import Interface.IDataService;
 import Model.Marks;
 import Model.Student;
 import ObjectFactory.ObjectFactory;
+import Service.DataService;
 
 import java.util.InputMismatchException;
 import java.util.Map;
@@ -22,8 +23,7 @@ public class Start {
 
 	public static void main(String[] args) {
 
-		System.out.println("Welcome to Student Infomation System");
-		Scanner in = new Scanner(System.in);
+		System.out.println("Welcome to Student Information System");
 
 		Start start = new Start();
 		while (true) {
@@ -32,9 +32,7 @@ public class Start {
 	}
 
 	public void startMenu() {
-		ObjectFactory obj = new ObjectFactory();
 		System.out.println("Enter \n1.Display Data\n2.Search Data\n3.Filter Data\n4.Sort Data\n5.Other(Exit)");
-		IDataService data = obj.getDataObject();
 		try {
 			int val = intReader.nextInt();
 			switch (val) {
@@ -70,7 +68,7 @@ public class Start {
 		Student student = null;
 		Marks marks = null;
 		if (whichMenu.equals("display")) {
-			Map<Student,Marks> allInfo = data.getData(student,marks,filePath,"all",null);
+			Map<Student,Marks> allInfo = DataService.getData(student, marks, filePath, "all", null);
 			data.display(student, marks,allInfo);
 		} else if (whichMenu.equals("search")) {
 
